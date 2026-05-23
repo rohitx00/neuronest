@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-blue: #0ea5e9; /* Electric Blue */
+  --color-primary-purple: #8b5cf6; /* Soft Purple */
+  --color-background-dark: #111113; /* Graphite/Charcoal */
+  --color-background-card: rgba(255, 255, 255, 0.03);
+  
+  --color-success: #10b981; /* Soft Emerald */
+  --color-warning: #f59e0b; /* Warm Amber */
+  --color-error: #ef4444; /* Muted Red */
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-[var(--color-background-dark)] text-gray-200 font-sans antialiased overflow-x-hidden;
+  }
+  
+  /* Custom scrollbar for premium feel */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-2xl shadow-xl transition-all duration-300 hover:bg-white/[0.04] hover:border-white/10;
+  }
+  .glass-panel {
+    @apply bg-black/40 backdrop-blur-2xl border-white/10;
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-[var(--color-primary-blue)] to-[var(--color-primary-purple)] bg-clip-text text-transparent;
+  }
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_25px_rgba(139,92,246,0.25)];
+  }
+  .active-glow {
+    @apply shadow-[0_0_20px_rgba(139,92,246,0.4)] border-[var(--color-primary-purple)]/50 bg-[var(--color-primary-purple)]/10;
+  }
+}
