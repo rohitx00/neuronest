@@ -1,15 +1,59 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-blue: #0ea5e9; /* Electric Blue */
-  --color-primary-purple: #8b5cf6; /* Soft Purple */
-  --color-background-dark: #111113; /* Graphite/Charcoal */
-  --color-background-card: rgba(255, 255, 255, 0.03);
-  
-  --color-success: #10b981; /* Soft Emerald */
-  --color-warning: #f59e0b; /* Warm Amber */
-  --color-error: #ef4444; /* Muted Red */
+  --color-on-surface: #e5e2e3;
+  --color-on-primary: #002d6e;
+  --color-secondary-container: #6f00be;
+  --color-on-tertiary: #542100;
+  --color-surface-tint: #b0c6ff;
+  --color-on-secondary-fixed-variant: #6900b3;
+  --color-inverse-primary: #0058ca;
+  --color-on-primary-fixed-variant: #00429b;
+  --color-primary-fixed-dim: #b0c6ff;
+  --color-on-secondary-fixed: #2c0051;
+  --color-on-tertiary-container: #4a1c00;
+  --color-surface-container-low: #1c1b1c;
+  --color-on-primary-container: #002761;
+  --color-background: #131314;
+  --color-tertiary-fixed: #ffdbca;
+  --color-on-primary-fixed: #001944;
+  --color-on-secondary: #490080;
+  --color-primary-fixed: #d9e2ff;
+  --color-on-surface-variant: #c2c6d7;
+  --color-secondary-fixed: #f0dbff;
+  --color-inverse-on-surface: #313031;
+  --color-inverse-surface: #e5e2e3;
+  --color-surface-variant: #353436;
+  --color-on-background: #e5e2e3;
+  --color-tertiary-fixed-dim: #ffb690;
+  --color-surface-container: #201f20;
+  --color-primary-container: #558dff;
+  --color-surface-bright: #3a393a;
+  --color-tertiary: #ffb690;
+  --color-secondary-fixed-dim: #ddb7ff;
+  --color-primary: #b0c6ff;
+  --color-outline: #8c90a0;
+  --color-surface-container-lowest: #0e0e0f;
+  --color-error: #ffb4ab;
+  --color-on-tertiary-fixed: #331100;
+  --color-on-secondary-container: #d6a9ff;
+  --color-tertiary-container: #e86d17;
+  --color-surface-container-highest: #353436;
+  --color-surface: #131314;
+  --color-outline-variant: #424654;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-tertiary-fixed-variant: #783200;
+  --color-secondary: #ddb7ff;
+  --color-surface-container-high: #2a2a2b;
+  --color-surface-dim: #131314;
+  --color-on-error-container: #ffdad6;
 
+  --font-headline: 'Hanken Grotesk', sans-serif;
+  --font-display: 'Hanken Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-label: 'Geist', sans-serif;
+  
   --font-sans: 'Inter', system-ui, sans-serif;
 }
 
@@ -18,10 +62,10 @@
     color-scheme: dark;
   }
   body {
-    @apply bg-[var(--color-background-dark)] text-gray-200 font-sans antialiased overflow-x-hidden;
+    @apply bg-background text-on-surface font-body antialiased overflow-x-hidden selection:bg-primary/30;
   }
   
-  /* Custom scrollbar for premium feel */
+  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -35,19 +79,27 @@
 }
 
 @layer utilities {
-  .glass-card {
-    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-2xl shadow-xl transition-all duration-300 hover:bg-white/[0.04] hover:border-white/10;
-  }
   .glass-panel {
-    @apply bg-black/40 backdrop-blur-2xl border-white/10;
+    @apply bg-white/[0.03] backdrop-blur-[24px] border border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)];
   }
-  .text-gradient {
-    @apply bg-gradient-to-r from-[var(--color-primary-blue)] to-[var(--color-primary-purple)] bg-clip-text text-transparent;
+  .glass-panel-glow:hover {
+    @apply shadow-[0_0_20px_rgba(176,198,255,0.05),inset_0_0_20px_rgba(176,198,255,0.02)];
   }
-  .hover-glow {
-    @apply transition-all duration-300 hover:shadow-[0_0_25px_rgba(139,92,246,0.25)];
+  .ai-gradient-border {
+    position: relative;
+    background: rgba(255,255,255,0.02);
+    border-radius: 1.5rem;
   }
-  .active-glow {
-    @apply shadow-[0_0_20px_rgba(139,92,246,0.4)] border-[var(--color-primary-purple)]/50 bg-[var(--color-primary-purple)]/10;
+  .ai-gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 1.5rem; 
+    padding: 1px; 
+    background: linear-gradient(45deg, #b0c6ff, #ddb7ff); 
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
   }
 }
