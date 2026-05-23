@@ -1,6 +1,14 @@
 import React from "react";
+import { useAppStore } from "../../store/useAppStore";
 
 export default function Progress() {
+  const goals = useAppStore((state) => state.goals);
+  const userStats = useAppStore((state) => state.userStats);
+  const insights = useAppStore((state) => state.insights);
+
+  const strengthInsight = insights.find(i => i.type === 'win');
+  const suggestionInsight = insights.find(i => i.type === 'recommendation');
+
   return (
     <div className="space-y-10">
       {/* Progress Header */}
@@ -41,10 +49,10 @@ export default function Progress() {
             <div className="relative w-48 h-48 shrink-0">
               <svg className="circular-chart text-primary w-full h-full drop-shadow-[0_0_15px_rgba(176,198,255,0.3)]" viewBox="0 0 36 36">
                 <path className="circle-bg fill-none stroke-white/10 stroke-[3.8]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-                <path className="circle fill-none stroke-[2.8] stroke-current stroke-linecap-round animate-[progress_1s_ease-out_forwards]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray="84, 100"></path>
+                <path className="circle fill-none stroke-[2.8] stroke-current stroke-linecap-round transition-all duration-1000 ease-out" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray={`${userStats.score}, 100`}></path>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-headline text-5xl font-black text-on-surface">84</span>
+                <span className="font-headline text-5xl font-black text-on-surface">{userStats.score}</span>
                 <span className="text-xs text-on-surface-variant tracking-widest uppercase">Score</span>
               </div>
             </div>
@@ -74,7 +82,7 @@ export default function Progress() {
                 </div>
               </div>
               <p className="text-xs text-on-surface-variant tracking-wider uppercase font-label mb-1">Focus Hours</p>
-              <p className="font-headline text-2xl font-bold text-on-surface">24h <span className="text-lg text-on-surface-variant font-medium">12m</span></p>
+              <p className="font-headline text-2xl font-bold text-on-surface">{userStats.focusHours}h <span className="text-lg text-on-surface-variant font-medium">{userStats.focusMinutes}m</span></p>
             </div>
             <div className="glass-panel rounded-xl p-5 hover:bg-white/[0.05] transition-colors cursor-default group">
               <div className="flex justify-between items-start mb-4">
@@ -83,7 +91,7 @@ export default function Progress() {
                 </div>
               </div>
               <p className="text-xs text-on-surface-variant tracking-wider uppercase font-label mb-1">Tasks Done</p>
-              <p className="font-headline text-2xl font-bold text-on-surface">41</p>
+              <p className="font-headline text-2xl font-bold text-on-surface">{userStats.tasksDone}</p>
             </div>
             <div className="glass-panel rounded-xl p-5 hover:bg-white/[0.05] transition-colors cursor-default group">
               <div className="flex justify-between items-start mb-4">
@@ -92,7 +100,7 @@ export default function Progress() {
                 </div>
               </div>
               <p className="text-xs text-on-surface-variant tracking-wider uppercase font-label mb-1">Consistency</p>
-              <p className="font-headline text-2xl font-bold text-on-surface">82%</p>
+              <p className="font-headline text-2xl font-bold text-on-surface">{userStats.consistency}%</p>
             </div>
             <div className="glass-panel rounded-xl p-5 hover:bg-white/[0.05] transition-colors cursor-default group">
               <div className="flex justify-between items-start mb-4">
@@ -101,7 +109,7 @@ export default function Progress() {
                 </div>
               </div>
               <p className="text-xs text-on-surface-variant tracking-wider uppercase font-label mb-1">Current Streak</p>
-              <p className="font-headline text-2xl font-bold text-on-surface">14 <span className="text-lg text-on-surface-variant font-medium">Days</span></p>
+              <p className="font-headline text-2xl font-bold text-on-surface">{userStats.streak} <span className="text-lg text-on-surface-variant font-medium">{userStats.streakType}</span></p>
             </div>
           </div>
 
@@ -114,44 +122,22 @@ export default function Progress() {
               </button>
             </div>
             <div className="space-y-6">
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-primary"></div>
-                    <span className="font-medium">GSoC Preparation</span>
+              {goals.map(goal => (
+                <div key={goal.id}>
+                  <div className="flex justify-between items-end mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full bg-${goal.color}`}></div>
+                      <span className="font-medium">{goal.title}</span>
+                    </div>
+                    <span className={`text-sm font-bold text-${goal.color}`}>{goal.progress}%</span>
                   </div>
-                  <span className="text-sm font-bold text-primary">72%</span>
-                </div>
-                <div className="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
-                  <div className="h-full bg-primary rounded-full relative w-[72%]">
-                    <div className="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>
+                  <div className="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+                    <div className={`h-full bg-${goal.color} rounded-full relative transition-all duration-500`} style={{width: `${goal.progress}%`}}>
+                      {goal.progress > 50 && <div className="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-secondary"></div>
-                    <span className="font-medium">Vacation-EXP</span>
-                  </div>
-                  <span className="text-sm font-bold text-secondary">58%</span>
-                </div>
-                <div className="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
-                  <div className="h-full bg-secondary rounded-full relative w-[58%]"></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-tertiary"></div>
-                    <span className="font-medium">AI Startup</span>
-                  </div>
-                  <span className="text-sm font-bold text-tertiary">19%</span>
-                </div>
-                <div className="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
-                  <div className="h-full bg-tertiary rounded-full relative w-[19%]"></div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -170,11 +156,11 @@ export default function Progress() {
             <div className="space-y-4 flex-1">
               <div className="bg-surface/50 border border-white/5 rounded-xl p-4 relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-                <p className="text-sm text-on-surface-variant leading-relaxed"><strong className="text-on-surface">Strength:</strong> Your deep focus peaks consistently between <span className="text-primary">9:00 AM</span> and <span className="text-primary">11:30 AM</span>.</p>
+                <p className="text-sm text-on-surface-variant leading-relaxed"><strong className="text-on-surface">Strength:</strong> {strengthInsight?.description || 'You are highly focused today.'}</p>
               </div>
               <div className="bg-surface/50 border border-white/5 rounded-xl p-4 relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
-                <p className="text-sm text-on-surface-variant leading-relaxed"><strong className="text-on-surface">Suggestion:</strong> Schedule intensive programming tasks before 12 PM. Shift administrative work to post-lunch periods to align with your natural energy dip.</p>
+                <p className="text-sm text-on-surface-variant leading-relaxed"><strong className="text-on-surface">Suggestion:</strong> {suggestionInsight?.description || 'Keep up the good work.'}</p>
               </div>
             </div>
           </div>
@@ -249,9 +235,6 @@ export default function Progress() {
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes shimmer {
           100% { transform: translateX(100%); }
-        }
-        @keyframes progress {
-          0% { stroke-dasharray: 0 100; }
         }
       `}} />
     </div>

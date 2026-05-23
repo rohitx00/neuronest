@@ -1,6 +1,14 @@
 import React from "react";
+import { useAppStore } from "../../store/useAppStore";
 
 export default function WeeklyReports() {
+  const userStats = useAppStore((state) => state.userStats);
+  const insights = useAppStore((state) => state.insights);
+
+  const winInsight = insights.find(i => i.type === 'win');
+  const challengeInsight = insights.find(i => i.type === 'challenge');
+  const recommendationInsight = insights.find(i => i.type === 'recommendation');
+
   return (
     <div className="space-y-12">
       {/* Header */}
@@ -38,10 +46,10 @@ export default function WeeklyReports() {
           <div className="relative w-40 h-40 flex items-center justify-center mb-6 z-10">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
               <circle className="text-surface-container-high" cx="50" cy="50" fill="none" r="45" stroke="currentColor" strokeWidth="4"></circle>
-              <circle className="text-primary transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="45" stroke="currentColor" strokeDasharray="283" strokeDashoffset="45" strokeWidth="6"></circle>
+              <circle className="text-primary transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="45" stroke="currentColor" strokeDasharray={`${userStats.score * 2.83} 283`} strokeDashoffset="0" strokeWidth="6"></circle>
             </svg>
             <div className="absolute flex flex-col items-center">
-              <span className="text-4xl font-headline font-black text-on-surface tracking-tighter">84</span>
+              <span className="text-4xl font-headline font-black text-on-surface tracking-tighter">{userStats.score}</span>
               <span className="text-xs text-on-surface-variant">/100</span>
             </div>
           </div>
@@ -63,7 +71,7 @@ export default function WeeklyReports() {
               <span className="material-symbols-outlined text-[18px]">task_alt</span>
               <h3 className="text-xs font-label uppercase tracking-wider">Tasks Completed</h3>
             </div>
-            <div className="text-3xl font-headline font-bold text-on-surface">41</div>
+            <div className="text-3xl font-headline font-bold text-on-surface">{userStats.tasksDone}</div>
           </div>
           
           <div className="glass-panel rounded-xl p-5 hover:bg-white/[0.03] transition-colors flex flex-col justify-between h-full min-h-[140px]">
@@ -71,7 +79,7 @@ export default function WeeklyReports() {
               <span className="material-symbols-outlined text-[18px]">timer</span>
               <h3 className="text-xs font-label uppercase tracking-wider text-on-surface-variant">Focus Hours</h3>
             </div>
-            <div className="text-3xl font-headline font-bold text-on-surface">24<span className="text-lg text-on-surface-variant ml-1 font-medium">h</span></div>
+            <div className="text-3xl font-headline font-bold text-on-surface">{userStats.focusHours}<span className="text-lg text-on-surface-variant ml-1 font-medium">h</span></div>
           </div>
           
           <div className="glass-panel rounded-xl p-5 hover:bg-white/[0.03] transition-colors flex flex-col justify-between h-full min-h-[140px]">
@@ -79,7 +87,7 @@ export default function WeeklyReports() {
               <span className="material-symbols-outlined text-[18px]">psychology</span>
               <h3 className="text-xs font-label uppercase tracking-wider text-on-surface-variant">Deep Work</h3>
             </div>
-            <div className="text-3xl font-headline font-bold text-on-surface">18</div>
+            <div className="text-3xl font-headline font-bold text-on-surface">{userStats.deepWork}</div>
           </div>
           
           <div className="glass-panel rounded-xl p-5 hover:bg-white/[0.03] transition-colors flex flex-col justify-between h-full min-h-[140px]">
@@ -87,7 +95,7 @@ export default function WeeklyReports() {
               <span className="material-symbols-outlined text-[18px]">model_training</span>
               <h3 className="text-xs font-label uppercase tracking-wider text-on-surface-variant">Consistency</h3>
             </div>
-            <div className="text-3xl font-headline font-bold text-on-surface">82<span className="text-lg text-on-surface-variant ml-1 font-medium">%</span></div>
+            <div className="text-3xl font-headline font-bold text-on-surface">{userStats.consistency}<span className="text-lg text-on-surface-variant ml-1 font-medium">%</span></div>
           </div>
           
           <div className="glass-panel rounded-xl p-5 hover:bg-white/[0.03] transition-colors flex flex-col justify-between h-full min-h-[140px] md:col-span-2 lg:col-span-1 relative overflow-hidden group">
@@ -96,7 +104,7 @@ export default function WeeklyReports() {
               <span className="material-symbols-outlined text-[18px]">local_fire_department</span>
               <h3 className="text-xs font-label uppercase tracking-wider text-on-surface-variant">Streak</h3>
             </div>
-            <div className="text-3xl font-headline font-bold text-on-surface relative z-10">14<span className="text-lg text-on-surface-variant ml-1 font-medium">Days</span></div>
+            <div className="text-3xl font-headline font-bold text-on-surface relative z-10">{userStats.streak}<span className="text-lg text-on-surface-variant ml-1 font-medium">{userStats.streakType}</span></div>
           </div>
         </div>
       </section>
@@ -108,18 +116,18 @@ export default function WeeklyReports() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="glass-panel rounded-xl p-5 border-l-2 border-l-primary/50 hover:shadow-[0_0_20px_rgba(176,198,255,0.1)] transition-shadow">
-            <h3 className="text-xs font-label text-primary uppercase tracking-wider mb-2">Biggest Win</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed">Consistent deep work blocks in the morning led to completing the dashboard UI 2 days ahead of schedule.</p>
+            <h3 className="text-xs font-label text-primary uppercase tracking-wider mb-2">{winInsight?.title || 'Biggest Win'}</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed">{winInsight?.description}</p>
           </div>
           
           <div className="glass-panel rounded-xl p-5 border-l-2 border-l-error/50">
-            <h3 className="text-xs font-label text-error uppercase tracking-wider mb-2">Biggest Challenge</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed">Significant drop in focus after 2 PM daily, specifically on Tuesday and Thursday afternoons.</p>
+            <h3 className="text-xs font-label text-error uppercase tracking-wider mb-2">{challengeInsight?.title || 'Biggest Challenge'}</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed">{challengeInsight?.description}</p>
           </div>
           
           <div className="glass-panel rounded-xl p-5 border-l-2 border-l-secondary/50 hover:shadow-[0_0_20px_rgba(221,183,255,0.1)] transition-shadow">
-            <h3 className="text-xs font-label text-secondary uppercase tracking-wider mb-2">Recommendation</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed">Shift complex problem-solving to pre-noon blocks. Reserve afternoons for admin tasks and planning.</p>
+            <h3 className="text-xs font-label text-secondary uppercase tracking-wider mb-2">{recommendationInsight?.title || 'Recommendation'}</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed">{recommendationInsight?.description}</p>
           </div>
         </div>
       </section>

@@ -1,6 +1,57 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useAppStore } from "../../store/useAppStore";
 
 export default function BrainMap() {
+  const goals = useAppStore((state) => state.goals);
+  const tasks = useAppStore((state) => state.tasks);
+
+  // Generate stable coordinates for nodes
+  const nodes = useMemo(() => {
+    const result = [];
+    
+    // Add goals
+    goals.forEach((goal, i) => {
+      const angle = (i / goals.length) * Math.PI * 2;
+      const radius = 100;
+      const x = 200 + Math.cos(angle) * radius;
+      const y = 200 + Math.sin(angle) * radius;
+      const z = Math.sin(angle * 2) * 50;
+      
+      result.push({
+        id: goal.id,
+        title: goal.title,
+        type: 'goal',
+        color: goal.color,
+        hex: goal.hex || '#b0c6ff',
+        x, y, z,
+        size: 6
+      });
+    });
+
+    // Add some incomplete tasks around their goals
+    tasks.filter(t => t.status !== 'completed').forEach((task, i) => {
+      const parentGoal = result.find(n => n.id === task.goalId);
+      if (parentGoal) {
+        const offsetAngle = i * 45;
+        const x = parentGoal.x + Math.cos(offsetAngle) * 40;
+        const y = parentGoal.y + Math.sin(offsetAngle) * 40;
+        const z = parentGoal.z + 20;
+
+        result.push({
+          id: task.id,
+          title: task.title,
+          type: 'task',
+          color: parentGoal.color,
+          hex: parentGoal.hex,
+          x, y, z,
+          size: 4
+        });
+      }
+    });
+
+    return result;
+  }, [goals, tasks]);
+
   return (
     <div className="relative h-[calc(100vh-4rem)] w-full overflow-hidden pointer-events-none -mt-8 -mx-8 -mb-24">
       {/* Ambient Background */}
@@ -65,23 +116,15 @@ export default function BrainMap() {
             </g>
           </svg>
 
-          {/* 3D Nodes */}
-          <div className="absolute rounded-full cursor-pointer transition-transform duration-300 hover:scale-150 w-6 h-6 -ml-3 -mt-3 bg-[radial-gradient(circle_at_30%_30%,#e6f0ff,#b0c6ff,#558dff)] shadow-[0_0_15px_rgba(176,198,255,0.4)] group" style={{ transform: "translate3d(200px, 200px, 50px)", transformStyle: "preserve-3d" }}>
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 text-white/80 text-[10px] whitespace-nowrap mt-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none drop-shadow-md font-headline font-bold">GSoC (Goal)</div>
-          </div>
+          {/* Dynamic 3D Nodes */}
+          {nodes.map((node, i) => (
+            <div key={i} className={`absolute rounded-full cursor-pointer transition-transform duration-300 hover:scale-150 w-${node.size} h-${node.size} -ml-${node.size/2} -mt-${node.size/2} bg-[radial-gradient(circle_at_30%_30%,#ffffff,${node.hex})] shadow-[0_0_15px_rgba(255,255,255,0.4)] group`} style={{ transform: `translate3d(${node.x}px, ${node.y}px, ${node.z}px)`, transformStyle: "preserve-3d" }}>
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 text-white/80 text-[10px] whitespace-nowrap mt-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none drop-shadow-md font-headline font-bold">
+                {node.title} {node.type === 'goal' && '(Goal)'}
+              </div>
+            </div>
+          ))}
           
-          <div className="absolute rounded-full cursor-pointer transition-transform duration-300 hover:scale-150 w-6 h-6 -ml-3 -mt-3 bg-[radial-gradient(circle_at_30%_30%,#f7e6ff,#ddb7ff,#6f00be)] shadow-[0_0_15px_rgba(221,183,255,0.4)] group" style={{ transform: "translate3d(280px, 160px, -40px)", transformStyle: "preserve-3d" }}>
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 text-white/80 text-[10px] whitespace-nowrap mt-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none drop-shadow-md font-headline font-bold">AI Startup</div>
-          </div>
-          
-          <div className="absolute rounded-full cursor-pointer transition-transform duration-300 hover:scale-150 w-4 h-4 -ml-2 -mt-2 bg-[radial-gradient(circle_at_30%_30%,#fff0e6,#ffb690,#c86b3e)] shadow-[0_0_15px_rgba(255,182,144,0.4)] group" style={{ transform: "translate3d(120px, 150px, 20px)", transformStyle: "preserve-3d" }}>
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 text-white/80 text-[10px] whitespace-nowrap mt-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none drop-shadow-md font-headline font-bold">Build Navbar</div>
-          </div>
-
-          <div className="absolute rounded-full cursor-pointer transition-transform duration-300 hover:scale-150 w-4 h-4 -ml-2 -mt-2 bg-[radial-gradient(circle_at_30%_30%,#e6f0ff,#b0c6ff,#558dff)] shadow-[0_0_15px_rgba(176,198,255,0.4)] group" style={{ transform: "translate3d(220px, 80px, 0px)", transformStyle: "preserve-3d" }}>
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 text-white/80 text-[10px] whitespace-nowrap mt-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none drop-shadow-md font-headline font-bold">Setup Repo</div>
-          </div>
-
         </div>
       </div>
 
